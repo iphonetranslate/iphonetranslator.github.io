@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+    <head>
+        <title>iPad translator</title>
+        <style>
+            html,
+            body {
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                margin: 0;
+                font-family: Arial;
+            }
+
+            #container {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            input {
+                border: 1px solid #aaaaaa;
+                padding-left: 1rem;
+                border-radius: 2rem;
+                height: 2rem;
+                width: 16rem;
+            }
+
+            #input {
+                border-radius: 1rem;
+                padding: 3rem;
+                border: 1px solid #aaaaaa;
+                gap: 1rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+        </style>
+        <script>
+            function setup() {
+                document
+                    .getElementById("buttonTo")
+                    .addEventListener("click", () => {
+                        let translated = document
+                            .getElementById("textTo")
+                            .value.toUpperCase()
+                            .split(" ")
+                            .map((word) => {
+                                let translatedWord = word === document.getElementById("subject").value ? "iPad" : "iPhone";
+
+                                for (let i = 0; i < word.length; i++) {
+                                    if (word.charCodeAt(i) >= 65) {
+                                        translatedWord += "|" + (word.charCodeAt(i) - 65);
+                                        continue;
+                                    }
+
+                                    if (word.charCodeAt(i) >= 33) {
+                                        translatedWord += "|" + (word.charCodeAt(i) - 7);
+                                    }
+                                }
+
+                                return translatedWord;
+                            })
+                            .join(" ");
+
+                        document.getElementById("output").innerHTML = translated;
+                        navigator.clipboard.writeText(translated);
+                    });
+
+                document
+                    .getElementById("buttonFrom")
+                    .addEventListener("click", () => {
+                        let words = document
+                            .getElementById("textFrom")
+                            .value.toLowerCase()
+                            .split(" ")
+                            .map((word) =>
+                                word
+                                    .replace("iphone|", "")
+                                    .replace("ipad|", "")
+                                    .split("|")
+                                    .map((letter) => {
+                                        letter = parseInt(letter);
+                                        if (letter >= 26) {
+                                            return String.fromCharCode(letter + 7);
+                                        }
+
+                                        return String.fromCharCode(letter + 97);
+                                    })
+                                    .join(""),
+                            )
+                            .join(" ");
+
+                        document.getElementById("output").innerHTML = words;
+                        navigator.clipboard.writeText(words);
+                    });
+            }
+        </script>
+    </head>
+    <body onload="setup()">
+        <p style="font-size: 2rem">iPad translator</p>
+        <p>output will be copied to clipboard</p>
+        <main id="container">
+            <section id="input">
+                <span>to iphone</span>
+                <input type="text" id="textTo" placeholder="text" />
+                <input
+                    type="text"
+                    id="subject"
+                    placeholder="subject (optional)"
+                />
+                <input type="button" id="buttonTo" value="translate" />
+            </section>
+            <section id="input">
+                <span>from iphone</span>
+                <input type="text" id="textFrom" placeholder="text" />
+                <input type="button" id="buttonFrom" value="translate" />
+            </section>
+        </main>
+        <p id="output" style="font-size: 2rem; font-weight: bold"></p>
+    </body>
+</html>
